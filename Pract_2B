@@ -1,0 +1,38 @@
+CREATE DATABASE db;
+USE db;
+
+--DML Statements = INSERT UPDATE DELETE SELECT 
+
+INSERT INTO Students (ID, Name, Age, Email) 
+VALUES (4, 'Neha', 18, 'neha@gmail.com');
+
+INSERT INTO Students (ID, Name, Age, Email) 
+VALUES (5, 'Aman', 20, 'aman@gmail.com'),
+       (6, 'Sara', 19, 'sara@gmail.com');
+
+SELECT * FROM Students;
+
+SELECT Name, Age FROM Students;
+
+SELECT * FROM Students 
+WHERE Age > 18;
+
+UPDATE Students 
+SET Email = 'diya_new@gmail.com' 
+WHERE Name = 'Diya';
+
+UPDATE Students 
+SET City = 'Mumbai' 
+WHERE Age >= 18;
+
+DELETE FROM Students 
+WHERE ID = 6;
+
+DELETE FROM Students 
+WHERE Age < 18;
+
+SELECT * FROM Students 
+ORDER BY Name ASC;
+
+-- ADD SOME MORE INSERT OPERATIONS FOR BETTER PERFORMANCE 
+

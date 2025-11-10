@@ -70,3 +70,5 @@ CALL proc_Grade(5, @g5); SELECT @g5;
 
 -- View final results
 SELECT * FROM Result;
+
+

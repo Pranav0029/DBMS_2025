@@ -1,0 +1,54 @@
+-- 1. Create database and use it
+CREATE DATABASE lib;
+USE lib;
+
+-- 2. Create main table 'library' to store book details
+CREATE TABLE library (
+    bno INT(5),
+    bname VARCHAR(40),
+    author VARCHAR(20),
+    allowed_days INT(5)
+);
+
+-- 3. Create audit table 'library_audit' to track changes in allowed_days
+CREATE TABLE library_audit (
+    bno INT(5),
+    old_all_days INT(5),
+    new_all_days INT(5)
+);
+
+-- 4. Insert sample data into 'library'
+INSERT INTO library VALUES
+(1, 'Database Systems', 'Connally T', 10),
+(2, 'System Programming', 'John Donovan', 20),
+(3, 'Computer Network & Internet', 'Douglas E. Comer', 18),
+(4, 'Agile Project Management', 'Ken Schwaber', 24),
+(5, 'Python for Data Analysis', 'Wes McKinney', 12);
+
+-- 5. View the initial data
+SELECT * FROM library;
+
+-- 6. Create a trigger to automatically log changes before updating allowed_days
+DELIMITER //
+CREATE TRIGGER tr1
+BEFORE UPDATE ON library
+FOR EACH ROW
+BEGIN
+    INSERT INTO library_audit (bno, old_all_days, new_all_days)
+    VALUES (NEW.bno, OLD.allowed_days, NEW.allowed_days);
+END //
+DELIMITER ;
+
+-- 7. Update the allowed_days for books (the trigger will log changes automatically)
+UPDATE library SET allowed_days = 15 WHERE bno = 1;
+UPDATE library SET allowed_days = 25 WHERE bno = 2;
+UPDATE library SET allowed_days = 13 WHERE bno = 3;
+UPDATE library SET allowed_days = 19 WHERE bno = 4;
+UPDATE library SET allowed_days = 17 WHERE bno = 5;
+
+-- 8. View updated library table
+SELECT * FROM library;
+
+-- 9. View audit table to see all changes
+SELECT * FROM library_audit;
+

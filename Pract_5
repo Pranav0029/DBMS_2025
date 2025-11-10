@@ -1,0 +1,72 @@
+-- Create database and use it
+CREATE DATABASE Score;
+USE Score;
+
+-- Create tables
+CREATE TABLE stud_marks (
+    name VARCHAR(20),
+    total_marks INT
+);
+
+CREATE TABLE Result (
+    roll_no INT PRIMARY KEY,
+    name VARCHAR(20),
+    class VARCHAR(20)
+);
+
+-- Insert sample data
+INSERT INTO stud_marks VALUES 
+('Suresh', 995),
+('Harish', 865),
+('Samart', 920),
+('Mohan', 1000),
+('Soham', 745);
+
+INSERT INTO Result (roll_no, name) VALUES
+(1, 'Suresh'),
+(2, 'Harish'),
+(3, 'Samart'),
+(4, 'Mohan'),
+(5, 'Soham');
+
+-- View data
+SELECT * FROM stud_marks;
+SELECT * FROM Result;
+
+-- Create procedure to assign grade
+DELIMITER //
+
+CREATE PROCEDURE proc_Grade(IN r INT, OUT grade VARCHAR(25))
+BEGIN
+    DECLARE m INT;
+
+    SELECT total_marks INTO m 
+    FROM stud_marks 
+    WHERE name = (SELECT name FROM Result WHERE roll_no = r);
+
+    IF m >= 990 THEN
+        SET grade = 'Distinction';
+        UPDATE Result SET class = 'Distinction' WHERE roll_no = r;
+    ELSEIF m >= 900 THEN
+        SET grade = 'FirstClass';
+        UPDATE Result SET class = 'FirstClass' WHERE roll_no = r;
+    ELSEIF m >= 825 THEN
+        SET grade = 'SecondClass';
+        UPDATE Result SET class = 'SecondClass' WHERE roll_no = r;
+    ELSE
+        SET grade = '--';
+        UPDATE Result SET class = '--' WHERE roll_no = r;
+    END IF;
+END //
+
+DELIMITER ;
+
+-- Call procedure for each student
+CALL proc_Grade(1, @g1); SELECT @g1;
+CALL proc_Grade(2, @g2); SELECT @g2;
+CALL proc_Grade(3, @g3); SELECT @g3;
+CALL proc_Grade(4, @g4); SELECT @g4;
+CALL proc_Grade(5, @g5); SELECT @g5;
+
+-- View final results
+SELECT * FROM Result;

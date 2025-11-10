@@ -1,0 +1,44 @@
+CREATE DATABASE db;
+USE db;
+
+-- DDL Commands = CREATE ALTER RENAME TRUNCATE DROP
+
+CREATE TABLE Students(
+  ID INT PRIMARY KEY,
+  Name VARCHAR(50) NOT NULL,
+  Age INT CHECK (Age >= 5),
+  Email VARCHAR(100) UNIQUE
+);
+
+INSERT INTO Students (ID, Name, Age, Email)
+VALUES
+(1, 'Aarav', 18, 'aarav@gmail.com'),
+(2, 'Diya', 19, 'diya@gmail.com'),
+(3, 'Rohan', 17, 'rohan@gmail.com');
+
+SELECT * FROM Students;
+
+ALTER TABLE Students ADD Phone VARCHAR(15);
+
+CREATE VIEW StudentView AS
+SELECT ID, Name, Age, Email FROM Students;
+
+CREATE INDEX idx_name ON Students(Name);
+
+CREATE SEQUENCE student_seq START WITH 1 INCREMENT BY 1;
+
+--Instead of writing Students, you can just write Stu.
+CREATE SYNONYM Stu FOR Students;
+
+RENAME TABLE Students TO Learners;
+
+SELECT * FROM Learners;
+
+TRUNCATE TABLE Learners;
+
+INSERT INTO Learners (ID, Name, Age, Email, Phone)
+VALUES (4, 'Neha', 18, 'neha@gmail.com', '9876543210');
+
+SELECT * FROM Learners;
+
+DROP TABLE Learners;

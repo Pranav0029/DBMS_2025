@@ -3,6 +3,13 @@ USE db;
 
 --DML Statements = INSERT UPDATE DELETE SELECT 
 
+CREATE TABLE Students(
+  ID INT PRIMARY KEY,
+  Name VARCHAR(50) NOT NULL,
+  Age INT CHECK (Age >= 5),
+  Email VARCHAR(100) UNIQUE
+);
+
 INSERT INTO Students (ID, Name, Age, Email) 
 VALUES (4, 'Neha', 18, 'neha@gmail.com');
 

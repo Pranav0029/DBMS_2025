@@ -1,92 +1,83 @@
--- 1. Create Tables
-CREATE TABLE Borrower(
-    Rollno NUMBER,
-    Name VARCHAR2(20),
+-- Create database and use it
+CREATE DATABASE library;
+USE library;
+
+-- Create Borrower table
+CREATE TABLE Borrower (
+    Rollno INT(4),
+    Name VARCHAR(20),
     DateofIssue DATE,
-    NameofBook VARCHAR2(30),
-    Status VARCHAR2(10)
+    NameofBook VARCHAR(30),
+    Status VARCHAR(10)
 );
 
-CREATE TABLE Fine(
-    Rollno NUMBER,
-    DateIssued DATE,
-    Amount NUMBER
+-- Insert sample data into Borrower
+INSERT INTO Borrower VALUES (14, 'Ram', '2022-09-19', 'Operating System', 'I');
+INSERT INTO Borrower VALUES (27, 'Soham', '2022-07-24', 'Object Oriented Programming', 'I');
+INSERT INTO Borrower VALUES (34, 'Mohan', '2022-06-12', 'Microprocessor', 'I');
+INSERT INTO Borrower VALUES (48, 'Om', '2022-04-19', 'Mechanics', 'I');
+
+-- View Borrower table
+SELECT * FROM Borrower;
+
+-- Create Fine table
+CREATE TABLE Fine (
+    Rollno INT(4),
+    Date DATE,
+    Amount INT(10)
 );
 
--- 2. Insert Data
-INSERT INTO Borrower VALUES(14,'Ram',DATE '2022-09-19','Operating System','I');
-INSERT INTO Borrower VALUES(27,'Soham',DATE '2022-07-24','Object Oriented Programming','I');
-INSERT INTO Borrower VALUES(34,'Mohan',DATE '2022-06-12','Microprocessor','I');
-INSERT INTO Borrower VALUES(48,'Om',DATE '2022-04-19','Mechanics','I');
+-- Create procedure to calculate fine
+DELIMITER //
 
-COMMIT;
-
--- 3. Procedure to Calculate Fine
-CREATE OR REPLACE PROCEDURE calc_Fine(
-    r IN NUMBER,
-    b IN VARCHAR2
-)
-IS
-    doi DATE;
-    diff NUMBER;
-    amt NUMBER;
+CREATE PROCEDURE calc_Fine(IN r INT, IN b VARCHAR(30))
 BEGIN
+    DECLARE doi DATE;
+    DECLARE diff INT;
+
     -- Get Date of Issue
-    SELECT DateofIssue INTO doi
-    FROM Borrower
+    SELECT DateofIssue INTO doi 
+    FROM Borrower 
     WHERE Rollno = r AND NameofBook = b;
 
     -- Calculate difference in days
-    diff := TRUNC(SYSDATE - doi);
+    SELECT DATEDIFF(CURDATE(), doi) INTO diff;
 
-    -- Determine fine
+    -- Insert fine based on difference
     IF diff >= 15 AND diff <= 30 THEN
-        amt := diff * 5;
-        INSERT INTO Fine(Rollno, DateIssued, Amount) VALUES(r, SYSDATE, amt);
-    ELSIF diff > 30 THEN
-        amt := diff * 50;
-        INSERT INTO Fine(Rollno, DateIssued, Amount) VALUES(r, SYSDATE, amt);
+        INSERT INTO Fine VALUES (r, CURDATE(), diff * 5);
+    ELSEIF diff > 30 THEN
+        INSERT INTO Fine VALUES (r, CURDATE(), diff * 50);
     END IF;
+END //
 
-    COMMIT;
-END;
-/
-
--- 4. Procedure to Submit Book
-CREATE OR REPLACE PROCEDURE submit(
-    r IN NUMBER
-)
-IS
+-- Create procedure to submit books
+CREATE PROCEDURE submit(IN r INT)
 BEGIN
+    -- Update Borrower status
     UPDATE Borrower SET Status = 'R' WHERE Rollno = r;
+
+    -- Delete fines for this borrower
     DELETE FROM Fine WHERE Rollno = r;
-    COMMIT;
-END;
-/
+END //
 
--- 5. Call Procedures
-BEGIN
-    calc_Fine(14,'Operating System');
-    calc_Fine(27,'Object Oriented Programming');
-    calc_Fine(34,'Microprocessor');
-    calc_Fine(48,'Mechanics');
-END;
-/
+DELIMITER ;
 
--- 6. View Fine Table
+-- Calculate fines for borrowers
+CALL calc_Fine(14, 'Operating System');
+CALL calc_Fine(27, 'Object Oriented Programming');
+CALL calc_Fine(34, 'Microprocessor');
+CALL calc_Fine(48, 'Mechanics');
+
+-- View Fine table after calculation
 SELECT * FROM Fine;
 
--- 7. Submit Books
-BEGIN
-    submit(14);
-    submit(27);
-    submit(34);
-    submit(48);
-END;
-/
+-- Submit books (return)
+CALL submit(14);
+CALL submit(27);
+CALL submit(48);
+CALL submit(34);
 
--- 8. View Tables After Submission
+-- View final Fine and Borrower tables
+SELECT * FROM Fine;
 SELECT * FROM Borrower;
-SELECT * FROM Fine;
-
---(link : https://github.com/adityasurya4103/SPPU-COMP-TE-PRACTICALS-LP1-AND-DBMS/blob/main/DBMS/Basic%20PL_SQL   )
